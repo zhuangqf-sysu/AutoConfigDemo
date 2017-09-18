@@ -1,4 +1,4 @@
-#SpringBoot AutoConfiguration
+# SpringBoot AutoConfiguration
 Spring boot auto-configuration 初探
  - 1、打印 AUTO-CONFIGURATION REPORT
  - 2、从@SpringBootApplication开始；
@@ -6,7 +6,7 @@ Spring boot auto-configuration 初探
  - 4、org.springframework.boot.autoconfigure.*;
  - 5、实践
 
-##1、打印 AUTO-CONFIGURATION REPORT
+## 1、打印 AUTO-CONFIGURATION REPORT
     mvn spring-boot:run -Dlogging.level.org.springframework.boot.autoconfigure.logging=DEBUG
 在每个Spring	Boot ApplicationContext中都存在一个相当有用的ConditionEvaluationReport。如果开启DEBUG日志输出,你将会看到它:
 
@@ -62,8 +62,8 @@ Spring boot auto-configuration 初探
         org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration
 这份report清楚完整地报告了spring boot做了哪些auto-config以及它们各自需要满足的条件，没有做哪些auto-config(因为不满足哪些条件)，开发者可以根据这份报告对程序进行调试，以求达到自己想要的效果。
 
-##2、从@SpringBootApplication开始；
-###（1）、@SpringBootApplication
+## 2、从@SpringBootApplication开始；
+### （1）、@SpringBootApplication
 我们的App启动类注解了@SpringBootApplication。从源码上来看，这个注解糅合了
     
     @SpringBootConfiguration
@@ -72,7 +72,7 @@ Spring boot auto-configuration 初探
 这三个注解，其中`@SpringBootConfiguration`是`@Configuration`的一个替代;@EnableAutoConfiguration的作用是`启用S​​pring应用程序上下文的自动配置，尝试猜测和配置可能需要的bean`，即Spring Boot的auto-config是由这个注解实现的;`@ComponentScan`的作用是扫描`@Configuration`注解的类的目录及子目录下的Components并装载。
 
 
-###（2）@EnableAutoConfiguration、：
+### （2）@EnableAutoConfiguration、：
 其源码如下:
     
     @Target({ElementType.TYPE})
@@ -90,7 +90,7 @@ Spring boot auto-configuration 初探
     }
 EnableAutoConfigurationImportSelector：使用的是spring-core模块中的SpringFactoriesLoader#loadFactoryNames()方法，它的作用是在类路径上扫描META-INF/spring.factories文件中定义的类。
 
-##3、spring.factories
+## 3、spring.factories
 在org.springframework.boot.autoconfigure包下找到/META-INF/spring.factories:
     
     # Initializers
@@ -162,9 +162,9 @@ EnableAutoConfigurationImportSelector：使用的是spring-core模块中的Sprin
       - @ConditionalOnSingleCandidate (types: com.fasterxml.jackson.databind.ObjectMapper; SearchStrategy: all) found a primary candidate amongst the following [jacksonObjectMapper] (OnBeanCondition)
 `JerseyAutoConfiguration`中用@Bean自动注入了以上三个变量，@Bean注解的方法上也可以使用@Conditional。
 
-##3、动手试一试
+## 3、动手试一试
 我们已经知道了spring-boot auto-configuration的流程，spring-boot也允许我们实现自己的auto-config。
-###（1）写一个简单的TestBean，假设它是我们需要引入的库包：
+### （1）写一个简单的TestBean，假设它是我们需要引入的库包：
 
     package com.example.zhuangqf;
     
@@ -185,7 +185,7 @@ EnableAutoConfigurationImportSelector：使用的是spring-core模块中的Sprin
     
     }
 在这个类中，我们并没有用到spring相关的东西，包括注解。
-###（2）编写我们的TestBeanAutoConfiguration
+### （2）编写我们的TestBeanAutoConfiguration
 
     package com.example.zhuangqf.config;
     
@@ -213,7 +213,7 @@ EnableAutoConfigurationImportSelector：使用的是spring-core模块中的Sprin
        }
     }
 `@EnableConfigurationProperties(TestBeanProperties.class)`告诉spring boot帮我们自动加载TestBeanProperties.class，这个类是用来读取properties外部文件的。
-###（3）TestBeanProperties.class：
+### （3）TestBeanProperties.class：
     package com.example.zhuangqf.properties;
     
     import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -235,12 +235,12 @@ EnableAutoConfigurationImportSelector：使用的是spring-core模块中的Sprin
         }
     }
 这个类从项目依赖的properties文件中读取com.example.zhuangqf前缀的key（properties文件以key-value格式存属性）
-###（4）application.properties：
+### （4）application.properties：
 
     org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.example.zhuangqf.config.TestBeanAutoConfiguration
     com.example.zhuangqf.testString=test
 第一句告诉spring boot自动加载`com.example.zhuangqf.config.TestBeanAutoConfiguration`中的配置，第二句配置（3）中的testString
-###(5)测试
+### (5)测试
 在之前的endpoint中加:
 
     @Autowired
@@ -261,7 +261,7 @@ EnableAutoConfigurationImportSelector：使用的是spring-core模块中的Sprin
       - @ConditionalOnMissingBean (types: com.zhuangqf.TestBean; SearchStrategy: all) found no beans (OnBeanCondition)
 我们自定义的类成功auto-config！！！
 
-##参考：
+## 参考：
  - Spring Boot参考指南https://www.gitbook.com/book/qbgbook/spring-boot-reference-guide-zh/discussions
  - http://sivalabs.in/2016/03/how-springboot-autoconfiguration-magic/
  - http://sivalabs.in/category/spring/
